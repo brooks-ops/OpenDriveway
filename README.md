@@ -171,6 +171,8 @@ Use [LAUNCH_CHECKLIST.md](/Users/brooksjeanette/Documents/Codex/2026-07-07/build
 
 When enabled, payments use Stripe Checkout with Stripe Connect destination charges. Successful payments are confirmed by the `/api/payments/stripe/webhook` endpoint, not by client-side redirects.
 
+Use [DEPLOYMENT.md](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/DEPLOYMENT.md) for the non-Stripe MVP deployment path. The repo includes `render.yaml` for the FastAPI backend, `frontend/vercel.json` for the React app, production env examples, GitHub Actions CI, and `scripts/production_smoke.py` for post-deploy checks.
+
 ## Environment Variables
 
 See [backend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/backend/.env.example) and [frontend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/frontend/.env.example). Every required local variable is documented inline.

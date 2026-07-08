@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: opendriveway-api
+    runtime: python
+    plan: starter
+    buildCommand: "python -m pip install --upgrade pip && python -m pip install -r backend/requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend"
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOCAL_DEMO_MODE
+        value: "false"
+      - key: STRIPE_ENABLED
+        value: "false"
+      - key: SUPABASE_URL
+        value: https://odciideyuiltpqdsqenk.supabase.co
+      - key: SUPABASE_JWT_AUDIENCE
+        value: authenticated
+      - key: API_CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+
+  - type: worker
+    name: opendriveway-migrate
+    runtime: python
+    plan: starter
+    buildCommand: "python -m pip install --upgrade pip && python -m pip install -r backend/requirements.txt"
+    startCommand: "PYTHONPATH=backend alembic -c backend/alembic.ini upgrade head && sleep infinity"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOCAL_DEMO_MODE
+        value: "false"
+      - key: STRIPE_ENABLED
+        value: "false"
+      - key: SUPABASE_URL
+        value: https://odciideyuiltpqdsqenk.supabase.co
+      - key: SUPABASE_JWT_AUDIENCE
+        value: authenticated
+      - key: API_CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
