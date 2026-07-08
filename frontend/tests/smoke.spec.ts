@@ -96,5 +96,6 @@ test("driver can view a listing and create a reservation", async ({ page }) => {
   await page.getByLabel("Start", { exact: true }).fill(datetimeLocalValue(reservationStart));
   await page.getByLabel("End", { exact: true }).fill(datetimeLocalValue(reservationEnd));
   await page.getByRole("button", { name: /Reserve/ }).click();
-  await expect(page.getByText(/Reservation created/)).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard\?booking=.*payment=demo/);
+  await expect(page.getByText(/confirmed/)).toBeVisible();
 });

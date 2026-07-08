@@ -111,6 +111,59 @@ async def test_driver_can_create_reservation(client, active_listing):
     assert body["total_cents"] == 6000
 
 
+async def test_demo_checkout_confirms_reservation(client, active_listing):
+    start_at = datetime.now(UTC) + timedelta(days=1)
+    end_at = start_at + timedelta(hours=3)
+
+    booking_response = await client.post(
+        "/api/bookings",
+        headers=demo_headers("driver@opendriveway.dev"),
+        json={
+            "listing_id": str(active_listing.id),
+            "start_at": start_at.isoformat(),
+            "end_at": end_at.isoformat(),
+        },
+    )
+    assert booking_response.status_code == 201
+    booking_id = booking_response.json()["id"]
+
+    checkout_response = await client.post(
+        f"/api/payments/bookings/{booking_id}/checkout-session",
+        headers=demo_headers("driver@opendriveway.dev"),
+    )
+
+    assert checkout_response.status_code == 200
+    assert checkout_response.json()["booking_id"] == booking_id
+    assert "payment=demo" in checkout_response.json()["url"]
+
+    refreshed = await client.get(f"/api/bookings/{booking_id}", headers=demo_headers("driver@opendriveway.dev"))
+    assert refreshed.status_code == 200
+    assert refreshed.json()["status"] == "confirmed"
+
+
+async def test_checkout_rejects_other_driver_booking(client, active_listing):
+    start_at = datetime.now(UTC) + timedelta(days=1)
+    end_at = start_at + timedelta(hours=2)
+
+    booking_response = await client.post(
+        "/api/bookings",
+        headers=demo_headers("driver-one@opendriveway.dev"),
+        json={
+            "listing_id": str(active_listing.id),
+            "start_at": start_at.isoformat(),
+            "end_at": end_at.isoformat(),
+        },
+    )
+    assert booking_response.status_code == 201
+
+    response = await client.post(
+        f"/api/payments/bookings/{booking_response.json()['id']}/checkout-session",
+        headers=demo_headers("driver-two@opendriveway.dev"),
+    )
+
+    assert response.status_code == 404
+
+
 async def test_reservation_rounds_partial_hours_up(client, active_listing):
     start_at = datetime.now(UTC) + timedelta(days=2)
     end_at = start_at + timedelta(minutes=90)

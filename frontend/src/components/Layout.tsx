@@ -238,6 +238,16 @@ export function Layout() {
         <Outlet />
       </main>
 
+      <footer className="border-t border-moss/10 bg-cream">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-sm font-semibold text-ink/60 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <p>OpenDriveway marketplace MVP</p>
+          <div className="flex gap-4">
+            <Link to="/terms" className="hover:text-moss">Terms</Link>
+            <Link to="/privacy" className="hover:text-moss">Privacy</Link>
+          </div>
+        </div>
+      </footer>
+
       {showBottomNav ? <BottomNav items={navItems} /> : null}
     </div>
   );

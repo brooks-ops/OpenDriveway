@@ -9,7 +9,9 @@ import { LandingPage } from "./pages/LandingPage";
 import { ListingDetailPage } from "./pages/ListingDetailPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NewListingPage } from "./pages/NewListingPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
 import { SearchPage } from "./pages/SearchPage";
+import { TermsPage } from "./pages/TermsPage";
 
 export function App() {
   return (
@@ -22,6 +24,8 @@ export function App() {
             <Route path="/become-a-host" element={<BecomeHostPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/listings/:listingId" element={<ListingDetailPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dashboard/listings/new" element={<NewListingPage />} />

@@ -8,6 +8,14 @@ import { apiGet, apiSend } from "../lib/api";
 import { formatMoney } from "../lib/format";
 import type { Listing } from "../types/domain";
 
+interface BookingResponse {
+  id: string;
+}
+
+interface CheckoutSessionResponse {
+  url: string;
+}
+
 export function ListingDetailPage() {
   const { listingId } = useParams();
   const navigate = useNavigate();
@@ -30,14 +38,15 @@ export function ListingDetailPage() {
       return;
     }
     try {
-      await apiSend("/api/bookings", "POST", {
+      const booking = await apiSend<BookingResponse>("/api/bookings", "POST", {
         listing_id: listing.id,
         start_at: new Date(startAt).toISOString(),
         end_at: new Date(endAt).toISOString(),
       });
-      setMessage("Reservation created. Payment confirmation can now be completed through the backend payment flow.");
+      const checkout = await apiSend<CheckoutSessionResponse>(`/api/payments/bookings/${booking.id}/checkout-session`, "POST");
+      window.location.assign(checkout.url);
     } catch {
-      setMessage("Could not create this reservation. Please confirm your account and try again.");
+      setMessage("Could not create this reservation or payment session. Please confirm your account and try again.");
     }
   }
 

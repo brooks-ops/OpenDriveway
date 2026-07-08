@@ -165,6 +165,12 @@ npm run test:e2e
 
 The smoke-test Vite server uses `http://localhost:5174` to avoid collisions with an existing local app on 5173.
 
+## Production Launch
+
+Use [LAUNCH_CHECKLIST.md](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/LAUNCH_CHECKLIST.md) before public traffic. Production mode requires real Supabase, Stripe, database, CORS, webhook, and map/geocoding settings; the backend refuses to start with `APP_ENV=production` if required live settings are missing or demo mode is still enabled.
+
+Payments use Stripe Checkout with Stripe Connect destination charges. Successful payments are confirmed by the `/api/payments/stripe/webhook` endpoint, not by client-side redirects.
+
 ## Environment Variables
 
 See [backend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/backend/.env.example) and [frontend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/frontend/.env.example). Every required local variable is documented inline.

@@ -5,6 +5,7 @@ from app.api import admin, auth, bookings, listings, maps, payments
 from app.core.config import get_settings
 
 settings = get_settings()
+settings.validate_production_ready()
 
 app = FastAPI(
     title="OpenDriveway API",

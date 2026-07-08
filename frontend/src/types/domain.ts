@@ -1,5 +1,6 @@
 export type UserRole = "driver" | "host" | "admin";
 export type ListingStatus = "draft" | "active" | "paused" | "archived";
+export type BookingStatus = "pending_payment" | "confirmed" | "cancelled" | "completed";
 
 export interface User {
   id: string;
@@ -35,4 +36,16 @@ export interface Listing {
 export interface ListingSearchResult {
   items: Listing[];
   total: number;
+}
+
+export interface Booking {
+  id: string;
+  listing_id: string;
+  driver_id: string;
+  start_at: string;
+  end_at: string;
+  status: BookingStatus;
+  total_cents: number;
+  currency: string;
+  created_at: string;
 }

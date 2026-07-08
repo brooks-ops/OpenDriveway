@@ -47,6 +47,22 @@ export function pageMeta(pathname: string) {
     };
   }
 
+  if (pathname.startsWith("/terms")) {
+    return {
+      title: "Terms of Service - OpenDriveway",
+      description: "OpenDriveway marketplace terms for drivers and hosts.",
+      keywords: "OpenDriveway terms, parking marketplace terms",
+    };
+  }
+
+  if (pathname.startsWith("/privacy")) {
+    return {
+      title: "Privacy Policy - OpenDriveway",
+      description: "OpenDriveway privacy policy for account, location, booking, and payment data.",
+      keywords: "OpenDriveway privacy, parking marketplace privacy",
+    };
+  }
+
   return {
     title: "OpenDriveway | Find & Rent Driveway Parking",
     description: "OpenDriveway connects drivers with homeowner driveway parking near events, airports, downtown areas, and destinations.",

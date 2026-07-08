@@ -4,17 +4,22 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../components/auth-context";
 import { apiGet, apiSend } from "../lib/api";
-import type { Listing } from "../types/domain";
+import { formatMoney } from "../lib/format";
+import type { Booking, Listing } from "../types/domain";
 
 export function DashboardPage() {
   const { user, refreshProfile, signOut } = useAuth();
   const [hostListings, setHostListings] = useState<Listing[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
+    if (user) {
+      apiGet<Booking[]>("/api/bookings/mine").then(setBookings).catch(() => setBookings([]));
+    }
     if (user?.role === "host" || user?.role === "admin") {
       apiGet<Listing[]>("/api/listings/host/mine").then(setHostListings).catch(() => setHostListings([]));
     }
-  }, [user?.role]);
+  }, [user]);
 
   async function becomeHost() {
     await apiSend("/api/auth/me", "PATCH", { role: "host" });
@@ -88,6 +93,30 @@ export function DashboardPage() {
           ) : null}
         </section>
       </div>
+
+      <section className="mt-5 rounded-md border border-ink/10 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-black">Bookings</h2>
+        {bookings.length === 0 ? (
+          <p className="mt-4 rounded-md bg-curb p-4 text-ink/65">No bookings yet.</p>
+        ) : (
+          <div className="mt-4 divide-y divide-ink/10">
+            {bookings.map((booking) => (
+              <div key={booking.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-bold capitalize">{booking.status.replace("_", " ")}</p>
+                  <p className="text-sm text-ink/60">
+                    {new Date(booking.start_at).toLocaleString()} to {new Date(booking.end_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-black text-moss">{formatMoney(booking.total_cents, booking.currency)}</span>
+                  <Link to={`/listings/${booking.listing_id}`} className="rounded-md border border-ink/15 px-3 py-2 text-sm font-bold">View listing</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </section>
   );
 }
