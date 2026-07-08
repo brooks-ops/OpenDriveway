@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     database_url: str
     supabase_url: AnyHttpUrl | None = None
     supabase_jwt_audience: str = "authenticated"
+    stripe_enabled: bool = False
     stripe_secret_key: str | None = None
     stripe_webhook_secret: str | None = None
     stripe_connect_refresh_url: str = "http://localhost:5173/dashboard/host"
@@ -45,9 +46,9 @@ class Settings(BaseSettings):
             missing.append("LOCAL_DEMO_MODE must be false")
         if self.supabase_url is None:
             missing.append("SUPABASE_URL")
-        if not self.stripe_secret_key:
+        if self.stripe_enabled and not self.stripe_secret_key:
             missing.append("STRIPE_SECRET_KEY")
-        if not self.stripe_webhook_secret:
+        if self.stripe_enabled and not self.stripe_webhook_secret:
             missing.append("STRIPE_WEBHOOK_SECRET")
         if not self.google_maps_api_key:
             missing.append("GOOGLE_MAPS_API_KEY")

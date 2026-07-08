@@ -11,6 +11,7 @@ export function DashboardPage() {
   const { user, refreshProfile, signOut } = useAuth();
   const [hostListings, setHostListings] = useState<Listing[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [payoutMessage, setPayoutMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -27,8 +28,12 @@ export function DashboardPage() {
   }
 
   async function startStripeOnboarding() {
-    const response = await apiSend<{ url: string }>("/api/payments/connect/onboarding-link", "POST");
-    window.location.assign(response.url);
+    try {
+      const response = await apiSend<{ url: string }>("/api/payments/connect/onboarding-link", "POST");
+      window.location.assign(response.url);
+    } catch {
+      setPayoutMessage("Stripe Connect is not enabled yet. You can still create listings while payouts are being configured.");
+    }
   }
 
   return (
@@ -59,6 +64,7 @@ export function DashboardPage() {
               Stripe Connect <ExternalLink size={18} />
             </button>
           )}
+          {payoutMessage ? <p className="mt-3 rounded-md bg-curb p-3 text-sm font-semibold text-ink/70">{payoutMessage}</p> : null}
         </section>
 
         <section className="rounded-md border border-ink/10 bg-white p-6 shadow-sm">

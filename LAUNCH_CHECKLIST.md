@@ -1,6 +1,6 @@
 # OpenDriveway Launch Checklist
 
-Use this checklist before opening OpenDriveway to real drivers or hosts. Do not enable production traffic while local/demo mode is enabled.
+Use this checklist before opening OpenDriveway to real drivers or hosts. Do not enable production traffic while local/demo mode is enabled. Stripe can stay off for an initial non-payment launch; turn it on only when paid bookings and payouts are ready.
 
 ## Required Production Environment
 
@@ -14,8 +14,9 @@ FRONTEND_URL=https://YOUR_FRONTEND_DOMAIN
 DATABASE_URL=postgresql+asyncpg://...
 SUPABASE_URL=https://odciideyuiltpqdsqenk.supabase.co
 SUPABASE_JWT_AUDIENCE=authenticated
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_ENABLED=false
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 STRIPE_CONNECT_REFRESH_URL=https://YOUR_FRONTEND_DOMAIN/dashboard/host
 STRIPE_CONNECT_RETURN_URL=https://YOUR_FRONTEND_DOMAIN/dashboard/host
 STRIPE_PLATFORM_FEE_BPS=1000
@@ -44,8 +45,9 @@ VITE_SUPABASE_ANON_KEY=...
 - Create a fresh signup and confirm a `public.users` row is created.
 - Run Become Host and confirm the user becomes `host` and has a `public.host_profiles` row.
 
-## Stripe
+## Stripe Later: Paid Bookings Gate
 
+- Leave `STRIPE_ENABLED=false` until these items are complete.
 - Activate Stripe account and complete platform settings.
 - Use test mode first, then switch to live keys.
 - Create a webhook endpoint:
@@ -55,6 +57,7 @@ VITE_SUPABASE_ANON_KEY=...
 - Run a host onboarding test and confirm `charges_enabled=true`.
 - Run a driver booking test and confirm payment redirects to Stripe Checkout.
 - Confirm successful Checkout changes the booking status to `confirmed`.
+- Set `STRIPE_ENABLED=true` only after live keys and the webhook secret are configured.
 
 ## Backend Deployment
 
@@ -62,7 +65,7 @@ VITE_SUPABASE_ANON_KEY=...
 - Do not seed demo data into production.
 - Confirm `/healthz` returns `{ "status": "ok" }`.
 - Confirm CORS allows only the production frontend.
-- Confirm the app refuses to start if production secrets are missing.
+- Confirm the app refuses to start if required production settings are missing.
 
 ## Frontend Deployment
 
@@ -84,10 +87,8 @@ VITE_SUPABASE_ANON_KEY=...
 2. Create a new account with Google.
 3. Create a new account with Apple.
 4. Upgrade one account to host.
-5. Complete Stripe Connect onboarding for that host.
-6. Create an active listing.
-7. Search for the listing.
-8. View the listing.
-9. Book the listing as a different driver.
-10. Pay through Stripe Checkout.
-11. Confirm the booking becomes `confirmed`.
+5. Create an active listing.
+6. Search for the listing.
+7. View the listing.
+8. Book the listing as a different driver.
+9. Confirm the booking appears in the dashboard as pending payment.

@@ -1,6 +1,9 @@
 from datetime import UTC, datetime, timedelta
 
+import pytest
 from conftest import demo_headers
+
+from app.core.config import Settings
 
 
 async def test_search_returns_active_listings(client, active_listing):
@@ -246,3 +249,32 @@ async def test_reservation_rejects_past_start_time(client, active_listing):
 async def test_protected_routes_require_auth(client):
     response = await client.get("/api/auth/me")
     assert response.status_code == 401
+
+
+def test_production_config_allows_stripe_disabled_initial_launch():
+    settings = Settings(
+        app_env="production",
+        local_demo_mode=False,
+        api_cors_origins="https://opendriveway.example",
+        database_url="postgresql+asyncpg://user:pass@db.example/opendriveway",
+        supabase_url="https://odciideyuiltpqdsqenk.supabase.co",
+        stripe_enabled=False,
+        google_maps_api_key="test-google-key",
+    )
+
+    settings.validate_production_ready()
+
+
+def test_production_config_requires_stripe_secrets_when_enabled():
+    settings = Settings(
+        app_env="production",
+        local_demo_mode=False,
+        api_cors_origins="https://opendriveway.example",
+        database_url="postgresql+asyncpg://user:pass@db.example/opendriveway",
+        supabase_url="https://odciideyuiltpqdsqenk.supabase.co",
+        stripe_enabled=True,
+        google_maps_api_key="test-google-key",
+    )
+
+    with pytest.raises(RuntimeError, match="STRIPE_SECRET_KEY"):
+        settings.validate_production_ready()

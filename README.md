@@ -167,9 +167,9 @@ The smoke-test Vite server uses `http://localhost:5174` to avoid collisions with
 
 ## Production Launch
 
-Use [LAUNCH_CHECKLIST.md](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/LAUNCH_CHECKLIST.md) before public traffic. Production mode requires real Supabase, Stripe, database, CORS, webhook, and map/geocoding settings; the backend refuses to start with `APP_ENV=production` if required live settings are missing or demo mode is still enabled.
+Use [LAUNCH_CHECKLIST.md](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/LAUNCH_CHECKLIST.md) before public traffic. Production mode requires real Supabase, database, CORS, and map/geocoding settings; the backend refuses to start with `APP_ENV=production` if required live settings are missing or demo mode is still enabled. Stripe can stay disabled with `STRIPE_ENABLED=false` until paid bookings are ready.
 
-Payments use Stripe Checkout with Stripe Connect destination charges. Successful payments are confirmed by the `/api/payments/stripe/webhook` endpoint, not by client-side redirects.
+When enabled, payments use Stripe Checkout with Stripe Connect destination charges. Successful payments are confirmed by the `/api/payments/stripe/webhook` endpoint, not by client-side redirects.
 
 ## Environment Variables
 

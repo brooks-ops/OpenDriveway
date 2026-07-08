@@ -26,6 +26,8 @@ async def create_connect_onboarding_link(
 ) -> StripeOnboardingLink:
     if settings.local_demo_mode and not settings.stripe_secret_key:
         return StripeOnboardingLink(url=settings.stripe_connect_return_url)
+    if not settings.stripe_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe Connect is not enabled yet")
 
     service = StripeConnectService(settings)
     host = await db.scalar(
@@ -77,6 +79,8 @@ async def create_booking_checkout_session(
             url=f"{frontend_url.rstrip('/')}/dashboard?booking={booking.id}&payment=demo",
             booking_id=str(booking.id),
         )
+    if not settings.stripe_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Payments are not enabled yet")
 
     payout_account = await db.scalar(select(HostPayoutAccount).where(HostPayoutAccount.host_id == booking.listing.host_id))
     if payout_account is None or not payout_account.charges_enabled:
@@ -96,6 +100,9 @@ async def stripe_webhook(
     settings: Settings = Depends(get_settings),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, bool]:
+    if not settings.stripe_enabled and not settings.local_demo_mode:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe webhooks are not enabled yet")
+
     payload = await request.body()
     if settings.local_demo_mode and not settings.stripe_secret_key:
         event = await request.json()

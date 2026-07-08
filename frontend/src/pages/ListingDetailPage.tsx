@@ -43,10 +43,14 @@ export function ListingDetailPage() {
         start_at: new Date(startAt).toISOString(),
         end_at: new Date(endAt).toISOString(),
       });
-      const checkout = await apiSend<CheckoutSessionResponse>(`/api/payments/bookings/${booking.id}/checkout-session`, "POST");
-      window.location.assign(checkout.url);
+      try {
+        const checkout = await apiSend<CheckoutSessionResponse>(`/api/payments/bookings/${booking.id}/checkout-session`, "POST");
+        window.location.assign(checkout.url);
+      } catch {
+        setMessage("Reservation request created. Online payments are not enabled yet, so this booking is pending.");
+      }
     } catch {
-      setMessage("Could not create this reservation or payment session. Please confirm your account and try again.");
+      setMessage("Could not create this reservation. Please confirm your account and try again.");
     }
   }
 
