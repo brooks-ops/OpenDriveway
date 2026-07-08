@@ -168,3 +168,31 @@ The smoke-test Vite server uses `http://localhost:5174` to avoid collisions with
 ## Environment Variables
 
 See [backend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/backend/.env.example) and [frontend/.env.example](/Users/brooksjeanette/Documents/Codex/2026-07-07/build-a-production-quality-web-application/frontend/.env.example). Every required local variable is documented inline.
+
+## Supabase Account Tables
+
+Supabase Auth stores identities in `auth.users`. OpenDriveway also needs public app profile tables for roles and host onboarding state. The migration is here:
+
+```text
+supabase/migrations/20260708000000_accounts_and_hosts.sql
+```
+
+Apply it with either:
+
+```bash
+supabase link --project-ref YOUR_PROJECT_REF
+supabase db push
+```
+
+Or open the Supabase dashboard, go to SQL Editor, paste the migration SQL, and run it.
+
+The migration creates:
+
+- `public.users`, synced from `auth.users`
+- `public.host_profiles`
+- `public.user_role` enum: `driver`, `host`, `admin`
+- `public.handle_new_auth_user()` trigger for new signups
+- `public.become_host()` helper function
+- Row Level Security policies for authenticated users and hosts
+
+This migration covers Supabase Auth profile and host metadata. The marketplace tables for listings, reservations, and payments are still managed by the FastAPI/Alembic backend migrations.
